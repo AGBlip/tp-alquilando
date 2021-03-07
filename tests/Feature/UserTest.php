@@ -12,6 +12,9 @@ class UserTest extends TestCase
     use DatabaseMigrations;
 
     protected $endpointURI='/api/users/';
+
+
+    /****************************** Camino "Feliz" ************************************/
     /**
      * Se debe poder obtener una lista de usuarios
      *
@@ -86,5 +89,90 @@ class UserTest extends TestCase
          * Agrego el control de que la base de datos quede vacia.
          */
         $this->assertTrue(User::count() == 0);
+    }
+
+
+    /***************************** Camino "No Feliz" ***********************************/
+
+
+    public function test_se_debe_devolver_404_si_no_existe_el_usuario()
+    {
+        $response = $this->get($this->endpointURI.'1');
+
+        $response->assertStatus(404);
+    }
+
+    public function test_se_debe_devolver_error_si_los_datos_para_crear_el_usuario_no_son_validos()
+    {
+        $user=User::factory()->make();
+
+        $user->nombre='A';
+
+        $response = $this->post($this->endpointURI, $user->toArray());
+
+        $response->assertStatus(400);
+    }
+
+    public function test_se_debe_devolver_error_si_el_email_para_crear_el_usuario_no_es_valido()
+    {
+        $user=User::factory()->make();
+
+        $user->email='A';
+
+        $response = $this->post($this->endpointURI, $user->toArray());
+
+        $response->assertStatus(400);
+    }
+
+
+
+    public function test_se_debe_devolver_error_si_el_email_para_crear_el_usuario_esta_repetido()
+    {
+        $previousUser=User::factory()->create();
+
+        $user=User::factory()->make();
+
+        $user->email=$previousUser->email;
+
+        $response = $this->post($this->endpointURI, $user->toArray());
+
+        $response->assertStatus(400);
+    }
+
+
+    public function test_se_debe_devolver_error_si_el_email_para_actualizar_el_usuario_esta_repetido()
+    {
+        $previousUser=User::factory()->create();
+
+        $user=User::factory()->create();
+
+        $user->email=$previousUser->email;
+
+        $response = $this->put($this->endpointURI.$user->id, $user->toArray());
+
+        $response->assertStatus(400);
+    }
+
+
+    public function test_se_debe_devolver_error_si_los_datos_para_actualizar_el_usuario_no_son_validos()
+    {
+        $user=User::factory()->create();
+
+        $user->nombre='A';
+
+        $response = $this->put($this->endpointURI.$user->id, $user->toArray());
+
+        $response->assertStatus(400);
+    }
+
+    public function test_se_debe_devolver_error_si_el_email_para_actualizar_el_usuario_no_es_valido()
+    {
+        $user=User::factory()->create();
+
+        $user->email='A';
+
+        $response = $this->put($this->endpointURI.$user->id, $user->toArray());
+
+        $response->assertStatus(400);
     }
 }
