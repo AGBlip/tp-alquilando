@@ -94,15 +94,28 @@ class UserTest extends TestCase
 
     /***************************** Camino "No Feliz" ***********************************/
 
+    /**
+     * Nota: Dado que los nombres de los tests son sumamente descriptivos
+     * para facilitar la lectura en caso de fallas, considero que los comentarios
+     * con la descripcion de dichos tests son redundantes.
+     */
 
-    public function test_se_debe_devolver_404_si_no_existe_el_usuario()
+    public function test_READ_se_debe_devolver_404_si_no_existe_el_usuario_solicitado()
     {
         $response = $this->get($this->endpointURI.'1');
 
         $response->assertStatus(404);
     }
 
-    public function test_se_debe_devolver_error_si_los_datos_para_crear_el_usuario_no_son_validos()
+
+    public function test_DELETE_se_debe_devolver_404_si_no_existe_el_usuario_solicitado()
+    {
+        $response = $this->delete($this->endpointURI.'1');
+
+        $response->assertStatus(404);
+    }
+
+    public function test_CREATE_se_debe_devolver_error_si_los_datos_para_crear_el_usuario_no_son_validos()
     {
         $user=User::factory()->make();
 
@@ -113,7 +126,7 @@ class UserTest extends TestCase
         $response->assertStatus(400);
     }
 
-    public function test_se_debe_devolver_error_si_el_email_para_crear_el_usuario_no_es_valido()
+    public function test_CREATE_se_debe_devolver_error_si_el_email_para_crear_el_usuario_no_es_valido()
     {
         $user=User::factory()->make();
 
@@ -124,9 +137,7 @@ class UserTest extends TestCase
         $response->assertStatus(400);
     }
 
-
-
-    public function test_se_debe_devolver_error_si_el_email_para_crear_el_usuario_esta_repetido()
+    public function test_CREATE_se_debe_devolver_error_si_el_email_para_crear_el_usuario_esta_repetido()
     {
         $previousUser=User::factory()->create();
 
@@ -140,7 +151,7 @@ class UserTest extends TestCase
     }
 
 
-    public function test_se_debe_devolver_error_si_el_email_para_actualizar_el_usuario_esta_repetido()
+    public function test_CREATE_se_debe_devolver_error_si_el_email_para_actualizar_el_usuario_esta_repetido()
     {
         $previousUser=User::factory()->create();
 
@@ -154,7 +165,7 @@ class UserTest extends TestCase
     }
 
 
-    public function test_se_debe_devolver_error_si_los_datos_para_actualizar_el_usuario_no_son_validos()
+    public function test_UPDATE_se_debe_devolver_error_si_los_datos_para_actualizar_el_usuario_no_son_validos()
     {
         $user=User::factory()->create();
 
@@ -165,7 +176,7 @@ class UserTest extends TestCase
         $response->assertStatus(400);
     }
 
-    public function test_se_debe_devolver_error_si_el_email_para_actualizar_el_usuario_no_es_valido()
+    public function test_UPDATE_se_debe_devolver_error_si_el_email_para_actualizar_el_usuario_no_es_valido()
     {
         $user=User::factory()->create();
 
