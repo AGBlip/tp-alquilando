@@ -2,63 +2,80 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest;
 
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Devuelve la lista de todos los usuarios.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        return User::all();
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crea un usuario nuevo y lo guarda en sistema.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\UserRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        //
+        $user=User::create($request->only(['nombre','apellido', 'email', 'usuario']));
+
+        if(!$user){
+            return response('No se pudo guardar el usuario, espere unos segundos e intente de nuevo', 400);
+        }
+
+        return response( $user, 201 );
     }
 
     /**
-     * Display the specified resource.
+     * Devuelve el usuario especificado.
      *
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
     public function show(User $user)
     {
-        //
+        return $user;
     }
 
     /**
-     * Update the specified resource in storage.
+     * Acutaliza los datos del usuario.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\UserRequest  $request
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
-        //
+        try {
+            $user->update($request->only(['nombre','apellido', 'email', 'usuario']));
+        } catch (Exception $e) {
+            return response('No se pudo modificar el usuario, espere unos segundos e intente de nuevo', 400);
+        }
+
+        return $user;
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina al usuario del sistema.
      *
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
     public function destroy(User $user)
     {
-        //
+        if(! $user->delete() ){
+            return response('No se pudo borrar el usuario, espere unos segundos e intente de nuevo', 500);
+        }
+
+        return response('',204);
     }
 }
