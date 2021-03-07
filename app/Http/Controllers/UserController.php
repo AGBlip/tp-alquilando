@@ -26,10 +26,10 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $user=User::create($request->only(['nombre','apellido', 'email', 'usuario']));
-
-        if(!$user){
-            return response('No se pudo guardar el usuario, espere unos segundos e intente de nuevo', 400);
+        try {
+            $user=User::create($request->only(['nombre','apellido', 'email', 'usuario']));
+        } catch (Exception $e) {
+            return response('No se pudo guardar el usuario, espere unos segundos e intente de nuevo', 500);
         }
 
         return response( $user, 201 );
@@ -58,7 +58,7 @@ class UserController extends Controller
         try {
             $user->update($request->only(['nombre','apellido', 'email', 'usuario']));
         } catch (Exception $e) {
-            return response('No se pudo modificar el usuario, espere unos segundos e intente de nuevo', 400);
+            return response('No se pudo modificar el usuario, espere unos segundos e intente de nuevo', 500);
         }
 
         return $user;
@@ -72,7 +72,10 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if(! $user->delete() ){
+
+        try {
+            $user->delete();
+        } catch (Exception $e) {
             return response('No se pudo borrar el usuario, espere unos segundos e intente de nuevo', 500);
         }
 
